@@ -1,0 +1,44 @@
+method: 
+  backbone: 'ME' # Type of backbone network [ME]
+  flow: True # Use scene-flow head
+  ego_motion: True # Use ego-motion head
+  semantic: True # Use background segmentation head
+  clustering: True # Use foreground clustering head
+
+misc:
+  run_mode: train # Mode to run the network in
+
+data:
+  dataset: SemanticKITTI_ME # Name of the dataset [StereoKITTI_ME, FlyingThings3D_ME, SemanticKITTI_ME, LidarKITTI_ME, WaymoOpen_ME]
+  root: ./data/semantic_kitti/ # Path to the data
+  input_features: absolute_coords # Input features assigned to each sparse voxel
+  n_classes: 2 # Number of classes for the background segmentation head
+  remove_ground: True # Remove ground by simple thresholding of the height coordinate
+  augment_data: True # Augment the data by random rotation and translation
+
+network:
+  normalize_features: True
+  norm_type: IN # Type of normalization layer IN = instance, BN = batch normalization, False = no normalization
+  in_kernel_size: 7 # Size of the initial convolutional kernel 
+  feature_dim: 64
+  ego_motion_points: 1024 # Number of points that are randomly sampled for the ego motion estimation
+  add_slack: True # Add slack row and column in the Sinkhorn iteration module
+  sinkhorn_iter: 3 # Number of Sinkhorn iterations in the ego motion module
+  use_pretrained: True # Flag for training
+  cluster_metric: euclidean # Distance metric used to compute the cluster assignments 0 = Euclidean
+  min_p_cluster: 30 # Min number of points in a cluster 
+  min_samples_dbscan: 5 # Min number of points in the neighborhood DBSCAN
+  eps_dbscan: 0.75 # Eps value in DBSCAN for the Euclidean distance
+  pretrained_path: '' # Path to the pretrained model
+  
+loss: 
+  background_loss: True # Compute background loss
+  flow_loss: False # Compute flow loss
+  ego_loss: True # Compute ego-motion loss
+  foreground_loss: True # Compute foreground loss
+
+metrics:
+  flow: False # Compute evaluation metrics for flow estimation (EPE3D, Acc3DS, Acc3DR, Outliers)
+  ego_motion: True # Compute evaluation metrics for ego-motion estimation (RRE, RTE)
+  semantic: True # Compute evaluation metrics for background segmentation (Precision, Recall)
+

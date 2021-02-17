@@ -1,0 +1,49 @@
+method:
+  backbone: ''
+
+misc:
+  voxel_size: 0.10 # Size of the voxel grid used for downsampling
+  num_points: 8192 # Number of points 
+  trainer: 'FlowTrainer' # Which class of trainer to use. Can be used if multiple different trainers are defined.
+  use_gpu: True # If GPU should be used or not
+  log_dir: ./logs/ # Path to the base folder where the models and logs will be saves
+  
+data:
+  input_features: absolute_coords # Input features to use (assigned to each sparse voxel)
+  only_near_points: True # Only consider near points (less than 35m away) [Used in all scene flow algorithms]
+
+train:
+  batch_size: 8 # Training batch size
+  acc_iter_size: 1 # Number of iterration to accumulate the gradients before optimizer step (can be used if the gpu memory is too low)
+  num_workers: 6 # Number of workers used for the data loader
+  max_epoch: 5000 # Max number of training epochs
+  stat_interval: 250 # Interval at which the stats are printed out and saved for the tensorboard (if positive it denotes iteration if negative epochs)
+  chkpt_interval: 500 # Interval at which the model is saved (if positive it denotes iteration if negative epochs)
+  val_interval: 2000 # Interval at which the validation is performed (if positive it denotes iteration if negative epochs)
+  weighted_seg_loss: True
+
+val:
+  batch_size: 8 # Validation batch size
+  num_workers: 6 # Number of workers for the validation data set
+
+test:
+  results_dir: ./eval/ # Path to where to save the test results
+  batch_size: 1 # Test batch size
+  num_workers: 1 # Num of workers to use for the test data set
+  
+loss: 
+  bg_loss_w: 1.0 # Weight of the background loss
+  fg_loss_w: 1.0 # Weight of the foreground loss
+  flow_loss_w: 1.0 # Weight of the flow loss
+  ego_loss_w: 1.0 # Weight of the ego motion loss
+  inlier_loss_w: 0.005 # Weight of the inlier loss (part of ego-motion)
+  cd_loss_w: 0.5 # Wegihts of the chamfer distance loss
+  rigid_loss_w: 1.0 # Wegihts of the rigidity loss
+  
+optimizer:
+  alg: Adam # Which optimizer to use
+  learning_rate: 0.001 # Initial learning rate
+  weight_decay: 0.0 # Weight decay weight
+  momentum: 0.8 #Momentum
+  scheduler: ExponentialLR
+  exp_gamma: 0.98

@@ -1,0 +1,50 @@
+method: 
+  backbone: 'ME' # Type of backbone network [ME]
+  flow: True # Use scene-flow head
+  ego_motion: False # Use ego-motion head
+  semantic: False # Use background segmentation head
+  clustering: False # Use foreground clustering head
+
+misc:
+  run_mode: test # Mode to run the network in
+
+data:
+  dataset: StereoKITTI_ME # Name of the dataset [StereoKITTI_ME, FlyingThings3D_ME, SemanticKITTI_ME, LidarKITTI_ME, WaymoOpen_ME]
+  root: ./data/stereo_kitti/ # Path to the data
+  input_features: absolute_coords # Input features assigned to each sparse voxel
+  n_classes: 2 # Number of classes for the background segmentation head
+  remove_ground: True # Remove ground by simple thresholding of the height coordinate
+  augment_data: False # Augment the data by random rotation and translation
+
+network:
+  normalize_features: True
+  norm_type: IN # Type of normalization layer IN = instance, BN = batch normalization, False = no normalization
+  in_kernel_size: 7 # Size of the initial convolutional kernel 
+  feature_dim: 64
+  ego_motion_points: 1024 # Number of points that are randomly sampled for the ego motion estimation
+  add_slack: True # Add slack row and column in the Sinkhorn iteration module
+  sinkhorn_iter: 3 # Number of Sinkhorn iterations in the ego motion module
+  use_pretrained: True # Flag for training
+  cluster_metric: euclidean # Distance metric used to compute the cluster assignments 0 = Euclidean
+  min_p_cluster: 30 # Min number of points in a cluster 
+  min_samples_dbscan: 5 # Min number of points in the neighborhood DBSCAN
+  eps_dbscan: 0.75 # Eps value in DBSCAN for the Euclidean distance
+  pretrained_path: logs/logs_FlyingThings3D_ME/flow_head_l1_loss/model_best.pt # Path to the pretrained model
+  
+test:
+  batch_size: 1 # Test batch size
+  num_workers: 1 # Num of workers to use for the test data set
+  postprocess_ego: False  # Apply postprocessing (optimization of the ego-motion)
+  postprocess_clusters: False # Apply postprocessing (optimization of the motion across the clusters)
+  results_dir: ./eval_results/stereo_kitti/
+
+loss: 
+  background_loss: False # Compute background loss
+  flow_loss: False # Compute flow loss
+  ego_loss: False # Compute ego-motion loss
+  foreground_loss: False # Compute foreground loss
+
+metrics:
+  flow: True # Compute evaluation metrics for flow estimation (EPE3D, Acc3DS, Acc3DR, Outliers)
+  ego_motion: False # Compute evaluation metrics for ego-motion estimation (RRE, RTE)
+  semantic: False # Compute evaluation metrics for background segmentation (Precision, Recall)
