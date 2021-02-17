@@ -176,6 +176,6 @@ In this project we use parts of the official implementations of:
 - [MinkowskiEngine](https://github.com/NVIDIA/MinkowskiEngine)
 - [MultiviewReg](https://github.com/zgojcic/3D_multiview_reg)
 - [RPMNet](https://github.com/yewzijian/RPMNet)
-- [FLOT] (https://github.com/valeoai/FLOT)
+- [FLOT](https://github.com/valeoai/FLOT)
 
  We thank the respective authors for open sourcing their methods.
