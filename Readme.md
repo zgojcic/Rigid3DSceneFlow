@@ -168,3 +168,14 @@ If you found this code or paper useful, please consider citing:
 ```
 ### Contact
 If you run into any problems or have questions, please create an issue or contact [Zan Gojcic](zgojcic@ethz.ch).
+
+
+### Acknowledgments
+In this project we use parts of the official implementations of: 
+
+- [MinkowskiEngine](https://github.com/NVIDIA/MinkowskiEngine)
+- [MultiviewReg](https://github.com/zgojcic/3D_multiview_reg)
+- [RPMNet](https://github.com/yewzijian/RPMNet)
+- [FLOT] (https://github.com/valeoai/FLOT)
+
+ We thank the respective authors for open sourcing their methods.
