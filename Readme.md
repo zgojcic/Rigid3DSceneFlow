@@ -1,7 +1,7 @@
 # Weakly Supervised Learning of Rigid 3D Scene Flow 
 This repository provides code and data to train and evaluate a weakly supervised method for rigid 3D scene flow estimation. It represents the official implementation of the paper:
 
-### [Weakly Supervised Learning of Rigid 3D Scene Flow](add_arxiv_link)
+### [Weakly Supervised Learning of Rigid 3D Scene Flow](https://arxiv.org/pdf/2102.08945.pdf)
 [Zan Gojcic](https://zgojcic.github.io/), [Or Litany](https://orlitany.github.io/), [Andreas Wieser](https://baug.ethz.ch/departement/personen/mitarbeiter/personen-detail.MTg3NzU5.TGlzdC82NzksLTU1NTc1NDEwMQ==.html), [Leonidas J. Guibas](https://geometry.stanford.edu/member/guibas/), [Tolga Birdal](http://tbirdal.me/)\
 | [IGP ETH Zurich](https://igp.ethz.ch/) | [Nvidia Toronto AI Lab](https://nv-tlabs.github.io/) | [Guibas Lab Stanford University](https://geometry.stanford.edu/index.html) |
 
@@ -159,12 +159,14 @@ The checkpoints and tensorboard data will be saved to `./logs/logs_SemanticKITTI
 If you found this code or paper useful, please consider citing:
 
 ```shell
-@inproceedings{gojcic2021wslr3Dsf,
-	title={Weakly {S}upervised {L}earning of {R}igid {3D} {S}cene {F}low},
-	author={Gojcic, Zan and Litany, Or and Wieser, Andreas and Guibas, Leonidas J and Birdal, Tolga},
-	booktitle={add arxiv info},
-	year={2021}
-}
+@misc{gojcic2021weakly3dsf,
+        title = {Weakly {S}upervised {L}earning of {R}igid {3D} {S}cene {F}low}, 
+        author = {Gojcic, Zan and Litany, Or and Wieser, Andreas and Guibas, Leonidas J and Birdal, Tolga},
+        year = {2021},
+        eprint={2102.08945},
+        archivePrefix={arXiv},
+        primaryClass={cs.CV}
+        }
 ```
 ### Contact
 If you run into any problems or have questions, please create an issue or contact [Zan Gojcic](zgojcic@ethz.ch).
