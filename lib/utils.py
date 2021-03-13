@@ -674,9 +674,3 @@ def upsample_cluster_labels(xyz, sparse_seg_tensor, cluster_labels, voxel_size =
 
     return cluster_labels_all
 
-
-
-def visualize_lidar_kitti(xyz, sparse_seg_tensor, cluster_labels, voxel_size = None):
-
-
-def visualize_flying_things_3d(xyz, sparse_seg_tensor, cluster_labels, voxel_size = None):
