@@ -80,8 +80,8 @@ class TrainLoss(nn.Module):
                 mask_temp = mask[prev_idx: prev_idx + gt_data['len_batch'][batch_idx][0]]
 
                 # Transform the point cloud with gt and estimated ego-motion parameters
-                pc_t_gt_temp = transform_point_cloud(p_s_temp[mask_temp,:3], gt_data['R_ego'][batch_idx,:,:], gt_data['t_ego'][batch_idx,:,:])
-                pc_t_est_temp = transform_point_cloud(p_s_temp[mask_temp,:3], inferred_values['R_est'][batch_idx,:,:], inferred_values['t_est'][batch_idx,:,:])
+                pc_t_gt_temp = transform_point_cloud(p_s_temp[mask_temp,1:4], gt_data['R_ego'][batch_idx,:,:], gt_data['t_ego'][batch_idx,:,:])
+                pc_t_est_temp = transform_point_cloud(p_s_temp[mask_temp,1:4], inferred_values['R_est'][batch_idx,:,:], inferred_values['t_est'][batch_idx,:,:])
                 
                 pc_t_gt.append(pc_t_gt_temp.squeeze(0))
                 pc_t_est.append(pc_t_est_temp.squeeze(0))
