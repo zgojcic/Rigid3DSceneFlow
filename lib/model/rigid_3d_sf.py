@@ -197,7 +197,7 @@ class MinkowskiFlow(nn.Module):
             feat_t_ego = feat_t[:,idx_ego_t,:]
 
             # Force transport to be zero for points further than 10 m apart
-            support_ego = (pairwise_distance(coor_s_ego, coor_t_ego, normalized=False ) < 10 ** 2).float()
+            support_ego = (pairwise_distance(coor_s_ego, coor_t_ego, normalized=False ) < 5 ** 2).float()
 
             # Cost matrix in the feature space
             feat_dist = pairwise_distance(feat_s_ego, feat_t_ego)
