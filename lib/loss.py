@@ -126,7 +126,7 @@ class TrainLoss(nn.Module):
                 foreground_mask_t = (gt_data['fg_labels_t'] == 1)
 
                 foreground_xyz_s = xyz_s[foreground_mask_s,:]
-                foreground_flow = inferred_values['refined_flow'][foreground_mask_s,:]
+                foreground_flow = inferred_values['refined_rigid_flow'][foreground_mask_s,:]
                 foreground_xyz_t = xyz_t[foreground_mask_t,:]
 
                 dist1, dist2 = self.chamfer_criterion(foreground_xyz_t.unsqueeze(0), (foreground_xyz_s + foreground_flow).unsqueeze(0))
@@ -147,7 +147,7 @@ class TrainLoss(nn.Module):
         
                 for cluster in inferred_values['clusters_s'][batch_idx]:
                     cluster_xyz_s = xyz_s[cluster,:].unsqueeze(0)
-                    cluster_flow = inferred_values['refined_flow'][cluster,:].unsqueeze(0)
+                    cluster_flow = inferred_values['refined_rigid_flow'][cluster,:].unsqueeze(0)
                     reconstructed_xyz = cluster_xyz_s + cluster_flow
 
                     # Compute the unweighted Kabsch estimation (transformation parameters which best explain the vectors)

@@ -28,7 +28,7 @@ class MinkowskiFlow(nn.Module):
         
         self.estimate_ego, self.estimate_flow, self.estimate_semantic, self.estimate_cluster = False, False, False, False
 
-        self.upsampling_k = 36 if args['data']['dataset'] in ['StereoKITTI_ME', 'FlyingThings3D_ME'] else 2
+        self.upsampling_k = 36 if args['data']['dataset'] in ['StereoKITTI_ME', 'FlyingThings3D_ME'] else 3
         self.tau_offset = 0.025 if args['data']['dataset'] in ['StereoKITTI_ME', 'FlyingThings3D_ME'] else 0.03
 
         if args['data']['input_features'] == 'occupancy':
