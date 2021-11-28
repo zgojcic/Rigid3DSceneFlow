@@ -67,7 +67,7 @@ class FlowTrainer:
         # evaluate model:
         self.model.eval()
         with torch.no_grad():
-            _, metrics = self._compute_loss_metrics(data)
+            _, metrics = self._compute_loss_metrics(data, phase='eval')
        
         return metrics
 
@@ -129,7 +129,7 @@ class MEFlowTrainer(FlowTrainer):
 
         FlowTrainer.__init__(self, args, model, device)
 
-    def _compute_loss_metrics(self, input_dict):
+    def _compute_loss_metrics(self, input_dict, phase='train'):
 
         ''' 
         Computes the losses and evaluation metrics
@@ -149,11 +149,14 @@ class MEFlowTrainer(FlowTrainer):
         sinput2 = ME.SparseTensor(features=input_dict['sinput_t_F'].to(self.device),
             coordinates=input_dict['sinput_t_C'].to(self.device))
                 
-        inferred_values = self.model(sinput1, sinput2, input_dict['pcd_eval_s'], input_dict['pcd_eval_t'], input_dict['fg_labels_s'], input_dict['fg_labels_t'])
+        if phase == 'train':
+            inferred_values = self.model(sinput1, sinput2, input_dict['pcd_s'], input_dict['pcd_t'], input_dict['fg_labels_s'], input_dict['fg_labels_t'])
+        else:
+            inferred_values = self.model(sinput1, sinput2, input_dict['pcd_eval_s'], input_dict['pcd_eval_t'], input_dict['fg_labels_s'], input_dict['fg_labels_t'])
 
         losses = self.compute_losses(inferred_values, input_dict)
         
-        metrics = self.compute_metrics(inferred_values, input_dict)
+        metrics = self.compute_metrics(inferred_values, input_dict, phase)
 
         return losses, metrics
 

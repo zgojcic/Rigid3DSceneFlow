@@ -429,9 +429,9 @@ def refine_ego_motion(pc_s, pc_t, bckg_mask_s, bckg_mask_t, R_est, t_est):
         init_T[0:3,0:3] = R_est[b_idx,:,:]
         init_T[0:3,3:4] = t_est[b_idx,:,:]
 
-        trans = o3d.registration.registration_icp(pcd_s, pcd_t,
+        trans = o3d.pipelines.registration.registration_icp(pcd_s, pcd_t,
                                                   max_correspondence_distance=0.15, init=init_T,
-                                                  criteria=o3d.registration.ICPConvergenceCriteria(max_iteration = 300))
+                                                  criteria=o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration = 300))
 
         R_ref[b_idx,:,:] = trans.transformation[0:3,0:3]
         t_ref[b_idx,:,:] = trans.transformation[0:3,3:4]
@@ -467,9 +467,9 @@ def refine_cluster_motion(pc_s, pc_t, R_est=None, t_est=None):
     pcd_s.points = o3d.utility.Vector3dVector(pc_s.cpu())
     pcd_t.points = o3d.utility.Vector3dVector(pc_t.cpu())
 
-    trans = o3d.registration.registration_icp(pcd_s, pcd_t,
+    trans = o3d.pipelines.registration.registration_icp(pcd_s, pcd_t,
                                               max_correspondence_distance=0.25, init=init_T,
-                                              criteria=o3d.registration.ICPConvergenceCriteria(max_iteration = 300))
+                                              criteria=o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration = 300))
 
     R_ref = trans.transformation[0:3,0:3].astype(np.float32)
     t_ref = trans.transformation[0:3,3:4].astype(np.float32)

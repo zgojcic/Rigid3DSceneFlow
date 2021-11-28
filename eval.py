@@ -17,10 +17,10 @@ from lib.logger import prepare_logger
 
 
 # Set the random seeds for repeatability
-np.random.seed(0)
-torch.manual_seed(0)
+np.random.seed(41)
+torch.manual_seed(41)
 if torch.cuda.is_available():
-    torch.cuda.manual_seed(0) 
+    torch.cuda.manual_seed(41) 
 
 def main(cfg, logger):
     """

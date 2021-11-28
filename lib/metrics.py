@@ -19,7 +19,7 @@ class EvalMetrics(nn.Module):
         self.args = args
         self.device = torch.device('cuda' if (torch.cuda.is_available() and args['misc']['use_gpu']) else 'cpu') 
 
-    def __call__(self, inferred_values, gt_data):
+    def __call__(self, inferred_values, gt_data, phase='train'):
         
         # Initialize the dictionary
         metrics = {}
@@ -28,13 +28,15 @@ class EvalMetrics(nn.Module):
             assert (('refined_flow' in inferred_values) & ('flow_eval' in gt_data)), "Flow metrics selected \
                                 but either est or gt flow not provided"
             
+            
+            gt_flow = gt_data['flow'] if phase == 'train' else gt_data['flow_eval']
             # Compute the end point error of the flow vectors
-
             # If bg/fg labels are available use them to also compute f-EPE and b-EPE
             if 'fg_labels_eval_s' in gt_data and self.args['data']['dataset'] not in ["FlyingThings3D_ME", "StereoKITTI_ME"]:
-                ego_metrics = compute_epe(inferred_values['refined_rigid_flow'], gt_data['flow_eval'], sem_label=gt_data['fg_labels_eval_s'], eval_stats=True)
+                gt_label = gt_data['fg_labels_s'] if phase == 'train' else gt_data['fg_labels_eval_s']
+                ego_metrics = compute_epe(inferred_values['refined_rigid_flow'], gt_flow, sem_label=gt_label, eval_stats=True)
             else:
-                ego_metrics = compute_epe(inferred_values['refined_rigid_flow'], gt_data['flow_eval'], eval_stats =True)
+                ego_metrics = compute_epe(inferred_values['refined_rigid_flow'], gt_flow, eval_stats =True)
             
             for key, value in ego_metrics.items():
                 metrics[key] = value
@@ -61,9 +63,11 @@ class EvalMetrics(nn.Module):
         if self.args['method']['semantic'] and self.args['metrics']['semantic']:
             assert (('semantic_logits_s_all' in inferred_values) & ('fg_labels_eval_s' in gt_data)), "Background segmentation metric selected \
                                             but either est or gt labels not provided"
-                                            
+            
+            gt_label = gt_data['fg_labels_s'] if phase == 'train' else gt_data['fg_labels_eval_s']
+
             pred_label = inferred_values['semantic_logits_s_all'].max(1)[1]
-            pre_f, pre_b, rec_f, rec_b = precision_at_one(pred_label, gt_data['fg_labels_eval_s'])
+            pre_f, pre_b, rec_f, rec_b = precision_at_one(pred_label, gt_label)
 
             metrics['precision_f'] = pre_f.item()
             metrics['recall_f'] = rec_f.item()
@@ -71,7 +75,7 @@ class EvalMetrics(nn.Module):
             metrics['recall_b'] = rec_b.item()
 
 
-            true_p, true_n, false_p, false_n = evaluate_binary_class(pred_label, gt_data['fg_labels_eval_s'])
+            true_p, true_n, false_p, false_n = evaluate_binary_class(pred_label, gt_label)
 
             metrics['true_p'] = true_p.item()
             metrics['true_n'] = true_n.item()

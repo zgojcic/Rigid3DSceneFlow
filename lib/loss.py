@@ -114,31 +114,49 @@ class TrainLoss(nn.Module):
             assert ('clusters_s' in inferred_values), "Foreground loss selected but inferred cluster labels not provided"
             
             rigidity_loss = torch.tensor(0.0).to(self.device)
-            chamfer_loss = torch.tensor(0.0).to(self.device)
 
             xyz_s = torch.cat(gt_data['pcd_s'], 0).to(self.device)
             xyz_t = torch.cat(gt_data['pcd_t'], 0).to(self.device)
 
-            # Two-way chamfer distance for the foreground points (only compute if both point clouds have more than 50 foreground points)
-            if torch.where(gt_data['fg_labels_s'] == 1)[0].shape[0] > 50 and torch.where(gt_data['fg_labels_t'] == 1)[0].shape[0] > 50:
+            # # Two-way chamfer distance for the foreground points (only compute if both point clouds have more than 50 foreground points)
+            # if torch.where(gt_data['fg_labels_s'] == 1)[0].shape[0] > 50 and torch.where(gt_data['fg_labels_t'] == 1)[0].shape[0] > 50:
 
-                foreground_mask_s = (gt_data['fg_labels_s'] == 1)
-                foreground_mask_t = (gt_data['fg_labels_t'] == 1)
+            foreground_mask_s = (gt_data['fg_labels_s'] == 1)
+            foreground_mask_t = (gt_data['fg_labels_t'] == 1)
 
-                foreground_xyz_s = xyz_s[foreground_mask_s,:]
-                foreground_flow = inferred_values['refined_rigid_flow'][foreground_mask_s,:]
-                foreground_xyz_t = xyz_t[foreground_mask_t,:]
+            prev_idx_s = 0
+            prev_idx_t = 0
+            chamfer_loss = []
+            # Iterate over the samples in the batch
+            for batch_idx in range(gt_data['R_ego'].shape[0]):
+    
+                temp_foreground_mask_s = foreground_mask_s[prev_idx_s : prev_idx_s + gt_data['len_batch'][batch_idx][0]]
+                temp_foreground_mask_t = foreground_mask_t[prev_idx_t : prev_idx_t + gt_data['len_batch'][batch_idx][1]]
 
-                dist1, dist2 = self.chamfer_criterion(foreground_xyz_t.unsqueeze(0), (foreground_xyz_s + foreground_flow).unsqueeze(0))
+                if torch.sum(temp_foreground_mask_s) > 50 and torch.sum(temp_foreground_mask_t) > 50:
+                    foreground_xyz_s_temp = xyz_s[prev_idx_s: prev_idx_s + gt_data['len_batch'][batch_idx][0],:]
+                    foreground_xyz_t_temp = xyz_t[prev_idx_t: prev_idx_t + gt_data['len_batch'][batch_idx][1],:]
+                    foreground_flow = inferred_values['refined_rigid_flow'][prev_idx_s: prev_idx_s + gt_data['len_batch'][batch_idx][0],:]
 
-                # Clamp the distance to prevent outliers (objects that appear and disappear from the scene)
-                dist1 = torch.clamp(torch.sqrt(dist1), max=1.0)
-                dist2 = torch.clamp(torch.sqrt(dist2), max=1.0)
+                    foreground_xyz_s = foreground_xyz_s_temp[temp_foreground_mask_s,:]
+                    foreground_flow = foreground_flow[temp_foreground_mask_s,:]
+                    foreground_xyz_t = foreground_xyz_t_temp[temp_foreground_mask_t,:]
 
-                chamfer_loss += ((torch.mean(dist1) + torch.mean(dist2)) / 2.0)
+                    dist1, dist2 = self.chamfer_criterion(foreground_xyz_t.unsqueeze(0), (foreground_xyz_s + foreground_flow).unsqueeze(0))
+                    
+                    # Clamp the distance to prevent outliers (objects that appear and disappear from the scene)
+                    dist1 = torch.clamp(torch.sqrt(dist1), max=1.0)
+                    dist2 = torch.clamp(torch.sqrt(dist2), max=1.0)
 
-            losses['chamfer_loss'] = chamfer_loss* self.args['loss'].get('cd_loss_w', 1.0)
+                    chamfer_loss.append((torch.mean(dist1) + torch.mean(dist2)) / 2.0)
 
+                prev_idx_s += gt_data['len_batch'][batch_idx][0]
+                prev_idx_t += gt_data['len_batch'][batch_idx][1]
+
+            # Handle the case where there are no foreground points
+            if len(chamfer_loss) == 0: chamfer_loss.append(torch.tensor(0.0).to(self.device))
+
+            losses['chamfer_loss'] = torch.mean(torch.stack(chamfer_loss)) * self.args['loss'].get('cd_loss_w', 1.0)
 
             # Rigidity loss (flow vectors of each cluster should be congruent)
             n_clusters = 0
