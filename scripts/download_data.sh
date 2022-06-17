@@ -23,7 +23,7 @@ function download() {
 
 function download_all() {
 
-    for DATASET in "stereo_kitti" "lidar_kitti" "semantic_kitti" "waymo_open" "fyling_things_3d"
+    for DATASET in "stereo_kitti" "lidar_kitti" "semantic_kitti" "waymo_open" "flying_things_3d"
     do
         download
     done	
@@ -34,11 +34,11 @@ function main() {
     then
         echo "No dataset selcted. All data will be downloaded"
         download_all
-    elif [ "$DATASET" == "stereo_kitti" ]  || [ "$DATASET" == "lidar_kitti" ] || [ "$DATASET" == "semantic_kitti" ] || [ "$DATASET" == "waymo_open" ] || [ "$DATASET" == "fyling_things_3d" ] 
+    elif [ "$DATASET" == "stereo_kitti" ]  || [ "$DATASET" == "lidar_kitti" ] || [ "$DATASET" == "semantic_kitti" ] || [ "$DATASET" == "waymo_open" ] || [ "$DATASET" == "flying_things_3d" ] 
     then
         download
     else
-        echo "Wrong dataset selected must be one of  [stereo_kitti, lidar_kitti, waymo_open, semantic_kitti, fyling_things_3d]."
+        echo "Wrong dataset selected must be one of  [stereo_kitti, lidar_kitti, waymo_open, semantic_kitti, flying_things_3d]."
     fi
 }
 
